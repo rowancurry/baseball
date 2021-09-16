@@ -1,12 +1,5 @@
 ---
 title: 'ROWAN CURRY: DATA EXPLORATION IN R & SQL'
-output: html_document
-
-knit: (function(input_file, encoding) {
-  out_dir <- 'docs';
-  rmarkdown::render(input_file,
- encoding=encoding,
- output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 ---
 
 *THE FOLLOWING IS AN EXPLORATION OF THE LAHMAN 2013 SQLITE DATABASE OF BASEBALL STATISTICS UP UNTIL 2011. THIS DATA WAS MADE AVAILABLE BY JEFF KNECHT. DOCUMENTATION OF EACH OF THE 24 REGULAR TABLES (AND ONE ADDITIONAL TABLE) CAN BE FOUND AT (http://seanlahman.com/files/database/readme2013.txt). THIS PROJECT USES THE FOLLOWING PACKAGES: RSQLite, dplyr, ggplot2.*
@@ -650,6 +643,7 @@ numSchools <- length(unique.schools)
 ```
 
 And R returns `r numSchools` schools. Therefore we can verify that the first SQL query returned the correct number of unique schools in the database. However, it's important to note that there are only 713 schools in the SchoolsPlayers table, which means that 36 of the schools in the Schools table are irrelevant to the data we're working with since they haven't produced any major league baseball players.
+
 
 #### CODE APPENDIX
 ```{r, ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE}

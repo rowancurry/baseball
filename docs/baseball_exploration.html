@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>ROWAN CURRY: DATA EXPLORATION IN R &amp; SQL</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Baseball</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="baseball_exploration.html">Data Exploration</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">ROWAN CURRY: DATA EXPLORATION IN R &amp; SQL</h1>
+
+</div>
+
+
+<p><em>THE FOLLOWING IS AN EXPLORATION OF THE LAHMAN 2013 SQLITE DATABASE OF BASEBALL STATISTICS UP UNTIL 2011. THIS DATA WAS MADE AVAILABLE BY JEFF KNECHT. DOCUMENTATION OF EACH OF THE 24 REGULAR TABLES (AND ONE ADDITIONAL TABLE) CAN BE FOUND AT (<a href="http://seanlahman.com/files/database/readme2013.txt" class="uri">http://seanlahman.com/files/database/readme2013.txt</a>). THIS PROJECT USES THE FOLLOWING PACKAGES: RSQLite, dplyr, ggplot2.</em></p>
+<p><strong>OUTLINE</strong>: This report does not follow any kind of particular narrative. Instead, I investigate questions I have about the data as they arise; and I answer these questions SQL. For some questions, I attempt to answer the questions in both SQL and through querying in SQL through R using the RSQLite package. Some of the code is provided for reference underneath each question, and the full code is provided at the end of the document in a code appendix.</p>
+<p><strong><em>How many (unique) people are included in the database? How many are players, managers, etc.?</em></strong></p>
+<p>The variable used to describe people in this database is playerID. The Master table contains all of the baseball players in the database, and the Managers table contains all of the managers in the database. Since the variable playerID is used to describe both Managers and Players, we can answer this question by simply extracting unique player IDs from the Master table.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT COUNT(DISTINCT playerID) 
+FROM Master 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">COUNT(DISTINCT playerID)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">18354</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We can see from the output table that there are 18354 unique people in the database.</p>
+<p>To do this in R, I sent the above query to R, but without the COUNT() function.</p>
+<p>The R for this is</p>
+<pre class="r"><code># r for unique people in the database
+all &lt;- dbGetQuery(db, &quot;SELECT DISTINCT playerID FROM Master&quot;)
+all.unique &lt;- unique(all)
+count &lt;- length(all.unique$playerID)</code></pre>
+<p>This R output gives a value of 18354 for the total number of unique people in the database, which is the same output as the above SQL code.</p>
+<p><strong><em>How many players become managers?</em></strong></p>
+<p>The Managers table contains a variable called plyrMgr, which has value ‘Y’ if the manager in question was a player who became a manager. We can thus count the playerIDs of players that became managers using the Managers table.</p>
+<p>The SQL for this is:</p>
+<pre class="sql"><code>
+SELECT COUNT(DISTINCT playerID) 
+FROM Managers 
+WHERE plyrMgr = &#39;Y&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">COUNT(DISTINCT playerID)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">247</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We can see from the output table that 247 players become managers. This is a high number, considering that the Managers database contains 682 unique playerIDs for managers, which I found using a SQL code that is not shown here. This is most likely because in early baseball history, when there were limited resources compared to what is available today, a lot of players simultaneously served as managers.</p>
+<p>To do this in R, I use a similar method to Question 2. I sent a similar query as above to R, but without the COUNT() function.</p>
+<p>The R for this is</p>
+<pre class="r"><code># r for how many players became managers
+managers2players &lt;- dbGetQuery(db, &quot;SELECT DISTINCT playerID FROM Managers 
+                               WHERE plyrMgr = &#39;Y&#39;&quot;)
+numManagerPlayers &lt;- length(managers2players$playerID) </code></pre>
+<p>We get the same result here– 247 managers become players.</p>
+<p><strong><em>How many players are there in each year, from 2000 to 2013? Do all teams have the same number of players?</em></strong></p>
+<p>To answer this question, I used the Batting table, since all players on a baseball team step up to the plate during a season. In order to count the number of players per year <em>and</em> count the number of players per team, I created a new table using columns from the Batting table. I took the variables playerID, yearID, and teamID from the Batting table and put them in my new table called NumPlayers. I restricted these variables so that they would only return data for the time span 2000 - 2013.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+CREATE TABLE NumPlayers AS
+SELECT playerID, yearID, teamID 
+FROM Batting 
+WHERE yearID 
+BETWEEN &#39;2000&#39; AND &#39;2013&#39;
+</code></pre>
+<p>To determine the number of players per year from 2000 to 2013, I counted the number of players per year by selecting the number of playerIDs per year from the new NumPlayers table.</p>
+<pre class="sql"><code>
+SELECT COUNT(playerID), yearID 
+FROM NumPlayers 
+GROUP BY yearID
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">COUNT(playerID)</th>
+<th align="right">yearID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1384</td>
+<td align="right">2000</td>
+</tr>
+<tr class="even">
+<td align="right">1339</td>
+<td align="right">2001</td>
+</tr>
+<tr class="odd">
+<td align="right">1319</td>
+<td align="right">2002</td>
+</tr>
+<tr class="even">
+<td align="right">1347</td>
+<td align="right">2003</td>
+</tr>
+<tr class="odd">
+<td align="right">1346</td>
+<td align="right">2004</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The total number players per season is displayed above for the first five years from 2000-2013. The average number of players per year, found using R code that isn’t displayed here, is 1331.5 players.</p>
+<p>The plot of the number of players per season is displayed below, again found using R code that isn’t displayed here.</p>
+<p><img src="baseball_exploration_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>As we can see from the plot above, there is a slight downward trend when it comes to Number of Baseball Players per year. This can be observed by the green trend line in the plot above, which was calculated using regression methods. However, there are a few dramatic outliers and the data is quite variant– the number of baseball players spikes in the years 2000, and then again in 2007 – and then drops dramatically in 2008 and stays quite low until 2012. This is most likely due to the 2008 recession.</p>
+<p>To try and answer the question of whether or not all teams have the same number of players, I first counted the number of players per team in the year 2000.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT COUNT(playerID), teamID FROM NumPlayers WHERE yearID = &#39;2000&#39; GROUP BY teamID
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">COUNT(playerID)</th>
+<th align="left">teamID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">45</td>
+<td align="left">ANA</td>
+</tr>
+<tr class="even">
+<td align="right">42</td>
+<td align="left">ARI</td>
+</tr>
+<tr class="odd">
+<td align="right">47</td>
+<td align="left">ATL</td>
+</tr>
+<tr class="even">
+<td align="right">50</td>
+<td align="left">BAL</td>
+</tr>
+<tr class="odd">
+<td align="right">52</td>
+<td align="left">BOS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first five rows of the output table are displayed above, and we can alredy see that each team does not have the same number of players. Because of the results from the year 2000, I decided that it would be possible to determine that teams do not have the same number of players for every year from 2000 - 2013 by counting the total number of players per team without grouping by year. This is possible because we can assume based on our results above that the variability in numbers of players is not due to the hiring and firing of players in the middle of the season, but because teams do not typically have the same number of players.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT COUNT(playerID), teamID FROM NumPlayers GROUP BY teamID
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">COUNT(playerID)</th>
+<th align="left">teamID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">204</td>
+<td align="left">ANA</td>
+</tr>
+<tr class="even">
+<td align="right">638</td>
+<td align="left">ARI</td>
+</tr>
+<tr class="odd">
+<td align="right">612</td>
+<td align="left">ATL</td>
+</tr>
+<tr class="even">
+<td align="right">620</td>
+<td align="left">BAL</td>
+</tr>
+<tr class="odd">
+<td align="right">644</td>
+<td align="left">BOS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first five rows of the output table are displayed above. We can thus confidently conclude that teams do not typically have the same number of players.</p>
+<p><strong><em>What team won the World Series in 2010?</em></strong></p>
+<p>The variable describing whether or not a team won the World Series can be found in the Teams table, and is called WSWin. It’s assigned a ‘Y’ if the team won, and a ‘N’ for every other possible scenario. The Teams table also has the variables teamID, lgID, divID; which provide the team abbreviation, league, and division. I used all of these variables to find my answer.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT teamID, lgID, divID 
+FROM Teams 
+WHERE yearID = &#39;2010&#39; 
+AND WSWin = &#39;Y&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">teamID</th>
+<th align="left">lgID</th>
+<th align="left">divID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SFN</td>
+<td align="left">NL</td>
+<td align="left">W</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We can see from the output table that the San Francisco Giants won the World Series in 2010– their league and division IDs indicate that they’re in the National League in the West Division.</p>
+<p><strong><em>What team lost the World Series each year?</em></strong></p>
+<p>Again, the information about World Series winners and losers can be found in the Teams table. While I know very little about baseball, my father is a die hard baseball fan, and he helped me figure out that the World Series loser would have been a Division and League winner, two instances that are described by the variables DivWin and LgWin. Thus, I was able to find the World Series loser for each year by using those two new variables, along with the WSWin variable.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT teamID, yearID, lgID, divID 
+FROM Teams 
+WHERE DivWin = &#39;Y&#39; 
+AND LgWin = &#39;Y&#39; 
+AND WSWin = &#39;N&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="left">teamID</th>
+<th align="right">yearID</th>
+<th align="left">lgID</th>
+<th align="left">divID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">BAL</td>
+<td align="right">1969</td>
+<td align="left">AL</td>
+<td align="left">E</td>
+</tr>
+<tr class="even">
+<td align="left">CIN</td>
+<td align="right">1970</td>
+<td align="left">NL</td>
+<td align="left">W</td>
+</tr>
+<tr class="odd">
+<td align="left">BAL</td>
+<td align="right">1971</td>
+<td align="left">AL</td>
+<td align="left">E</td>
+</tr>
+<tr class="even">
+<td align="left">CIN</td>
+<td align="right">1972</td>
+<td align="left">NL</td>
+<td align="left">W</td>
+</tr>
+<tr class="odd">
+<td align="left">NYN</td>
+<td align="right">1973</td>
+<td align="left">NL</td>
+<td align="left">E</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first five losers are displayed in the table above. We can see that the earliest Division Winner and League Winner data is from 1969. This is because a large number of major teams were created in this year, and baseball got more complicated, hence the Division Winner and the League Winner. These major changes were the result of a lot of historical events, most notably, the integration of baseball. Even though this output table starts in 1969, the first World Series was in 1903. Thus, to get the losers of the World Series from 1903 - 1969, we have to repeat what we did above, but for just the LgWin variable.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT teamID, yearID, lgID, divID 
+FROM Teams 
+WHERE WSWin = &#39;N&#39; 
+AND LgWin = &#39;Y&#39;
+AND yearID
+BETWEEN &#39;1903&#39; AND &#39;1968&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="left">teamID</th>
+<th align="right">yearID</th>
+<th align="left">lgID</th>
+<th align="left">divID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">PIT</td>
+<td align="right">1903</td>
+<td align="left">NL</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">PHA</td>
+<td align="right">1905</td>
+<td align="left">AL</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">CHN</td>
+<td align="right">1906</td>
+<td align="left">NL</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">DET</td>
+<td align="right">1907</td>
+<td align="left">AL</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">DET</td>
+<td align="right">1908</td>
+<td align="left">AL</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first 5 rows of the resulting output table are printed above. The World Series didn’t truly take off until 1905, so the skipped year of 1904 makes logical sense. The table covers the years 1903 - 1968, as desired.</p>
+<p>Something that’s important to note about these World Series participants is that they do not accurately represent the best baseball teams at the time. This is due to the human rights travesty that was Jim Crow in America. As a result, we can imagine that if the seperate league for black Americans had been combined with Major League Baseball, the World Series Results in this second table would be quite different.</p>
+<p>To analyze this data, we can can use <strong>dbGetQuery()</strong> in R and then combine the data, which is done in code that is not displayed here. Below is the R output, which is a table of teams that have made it to the World Series and lost, and how many times it has happened for each team from the years 1903 - 2013.</p>
+<pre><code>## 
+## ATL BAL BOS BRO BSN CHA CHN CIN CLE DET KCA LAN MIN ML1 ML4 NY1 
+##   4   3   4   8   1   2   8   4   3   6   1   4   1   1   1   9 
+## NYA NYN OAK PHA PHI PIT SDN SFN SLA SLN TBA TEX WS1 
+##  13   1   2   3   5   2   2   2   1   8   1   2   2</code></pre>
+<p>We can see that the Dodgers, the Yankees, and the St. Louis Cardinals have had the most close brushes with winning the World Series, without actually winning the World Series.</p>
+<p><strong><em>Compute the table of World Series winners for all years.</em></strong></p>
+<p>This is pretty straightfoward after figuring out the answer to Question 5. The SQL is essentially the same, but with the added variable of yearID, as well as the restriction of years 1903 - 2013, since we learned that the first world series was in 1903.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT teamID, lgID, divID, yearID 
+FROM Teams 
+WHERE WSWin = &#39;Y&#39;
+AND yearID
+BETWEEN &#39;1903&#39; and &#39;2013&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="left">teamID</th>
+<th align="left">lgID</th>
+<th align="left">divID</th>
+<th align="right">yearID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">BOS</td>
+<td align="left">AL</td>
+<td align="left">NA</td>
+<td align="right">1903</td>
+</tr>
+<tr class="even">
+<td align="left">NY1</td>
+<td align="left">NL</td>
+<td align="left">NA</td>
+<td align="right">1905</td>
+</tr>
+<tr class="odd">
+<td align="left">CHA</td>
+<td align="left">AL</td>
+<td align="left">NA</td>
+<td align="right">1906</td>
+</tr>
+<tr class="even">
+<td align="left">CHN</td>
+<td align="left">NL</td>
+<td align="left">NA</td>
+<td align="right">1907</td>
+</tr>
+<tr class="odd">
+<td align="left">CHN</td>
+<td align="left">NL</td>
+<td align="left">NA</td>
+<td align="right">1908</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first five rows of the output table is displayed above. As expected, the divID column is full of NULL values until 1968. In order to analyze this data a little bit, we’ll use a similar method in R that we used in Question 6 (the code is not displayed here). Below is the R output, which is a table of teams that have made it to the World Series and won, and how many times it has happened for each team from the years 1903 - 2013.</p>
+<pre><code>## 
+## ANA ARI ATL BAL BOS BRO BSN CHA CHN CIN CLE DET FLO KCA LAN MIN 
+##   1   1   1   3   8   1   1   3   2   5   2   4   2   1   5   2 
+## ML1 NY1 NYA NYN OAK PHA PHI PIT SFN SLN TOR WS1 
+##   1   5  27   2   4   5   2   5   2  11   2   1</code></pre>
+<p>We can see here that the Yankees, the St. Louis Cardinals, and the Boston Red Sox, have been the most fortunate when it comes to winning the World Series. There are several teams not represented on this list at all, which means that there are a few teams who have never won a World Series.</p>
+<p><strong><em>In 2003, what were the three highest salaries? (This refers to unique salaries, i.e. there may be several players getting the exact same amount.)</em></strong></p>
+<p>To get the 3 highest salaries, we refer to the Salaries table. Here, we use choose only the unique salaries using the variable salary, as well as filtering by the yearID, and telling SQL to order the output from largest to smallest, and then only printing the top 3 values.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+-- getting three largest salaries
+SELECT DISTINCT salary 
+FROM Salaries 
+WHERE yearID = &#39;2003&#39; 
+ORDER BY salary 
+DESC LIMIT 3
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>3 records</caption>
+<thead>
+<tr class="header">
+<th align="right">salary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">22000000</td>
+</tr>
+<tr class="even">
+<td align="right">20000000</td>
+</tr>
+<tr class="odd">
+<td align="right">18700000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The output table above show that the three largest salaries are 22 milion, 20 million, and 18.7 milion.</p>
+<p>To find the players who recieved these salaries in 2003, we use our salary results above and apply them to the Salary table, by selecting the unique playerID and teamID that correspond to any one of the three salaries.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT DISTINCT playerID, teamID 
+FROM Salaries 
+WHERE salary = &#39;22000000&#39; OR salary = &#39;20000000&#39; OR salary = &#39;18700000&#39; 
+AND yearID = &#39;2003&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>9 records</caption>
+<thead>
+<tr class="header">
+<th align="left">playerID</th>
+<th align="left">teamID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rodrial01</td>
+<td align="left">TEX</td>
+</tr>
+<tr class="even">
+<td align="left">ramirma02</td>
+<td align="left">BOS</td>
+</tr>
+<tr class="odd">
+<td align="left">delgaca01</td>
+<td align="left">TOR</td>
+</tr>
+<tr class="even">
+<td align="left">rodrial01</td>
+<td align="left">NYA</td>
+</tr>
+<tr class="odd">
+<td align="left">bondsba01</td>
+<td align="left">SFN</td>
+</tr>
+<tr class="even">
+<td align="left">cabremi01</td>
+<td align="left">DET</td>
+</tr>
+<tr class="odd">
+<td align="left">hallaro01</td>
+<td align="left">PHI</td>
+</tr>
+<tr class="even">
+<td align="left">howarry01</td>
+<td align="left">PHI</td>
+</tr>
+<tr class="odd">
+<td align="left">zitoba01</td>
+<td align="left">SFN</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We can see from the output table that there are nine players who recieved these salaries. To find the player details, such as name, batting details, and throwing details, we take the playerIDs from above and apply them to the Master table, where we can find all of this information.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT nameFirst, nameLast, bats, throws, playerID 
+FROM Master 
+WHERE playerID = &#39;rodrial01&#39; OR playerID = &#39;ramirma02&#39; OR playerID = &#39;delgaca01&#39; 
+OR playerID = &#39;bondsba01&#39; OR  playerID = &#39;cabremi01&#39; OR playerID = &#39;hallaro01&#39; 
+OR playerID = &#39;howarry01&#39; OR playerID = &#39;zitoba01&#39; 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 1</caption>
+<thead>
+<tr class="header">
+<th align="left">nameFirst</th>
+<th align="left">nameLast</th>
+<th align="left">bats</th>
+<th align="left">throws</th>
+<th align="left">playerID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Barry</td>
+<td align="left">Bonds</td>
+<td align="left">L</td>
+<td align="left">L</td>
+<td align="left">bondsba01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The output table above shows one example, Barry Bonds, and the relevant information we extracted from the Master table. In order to display all of the player details we want, we take the queries above over to R using <strong>dbGetQuery()</strong> and combine our results (the code for this is not shown because it’s repetive). The resulting table is displayed below.</p>
+<pre><code>##    playerID teamID nameFirst  nameLast bats throws
+## 1 bondsba01    SFN     Barry     Bonds    L      L
+## 2 cabremi01    DET    Miguel   Cabrera    R      R
+## 3 delgaca01    TOR    Carlos   Delgado    L      R
+## 4 hallaro01    PHI       Roy  Halladay    R      R
+## 5 howarry01    PHI      Ryan    Howard    L      L
+## 6 ramirma02    BOS     Manny   Ramirez    R      R
+## 7 rodrial01    TEX      Alex Rodriguez    R      R
+## 8 rodrial01    NYA      Alex Rodriguez    R      R
+## 9  zitoba01    SFN     Barry      Zito    L      L</code></pre>
+<p>We can see that these 9 top compensated players are mostly from different teams, with the exception of Roy Halladay and Ryan Howard, who both played for the Philadelphia Phillies. Of these players, a suprising amount are either completely left handed, or bat or throw with their left arm. This is suprising since such a small portion of the population is left handed.</p>
+<p><strong><em>What was the total payroll in 2010 for each of the different teams? What about the team payrolls for all of the years for which we have salary information? What would this look like in a visualization?</em></strong></p>
+<p>In order to compute the total payroll for each of the different teams, we again look to the Salary table. In this table, we use the SUM() function on the salary variable, and select this result along with the teamID, and then restrict our results to the year 2010.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT SUM(salary), teamID 
+FROM Salaries 
+WHERE yearID = &#39;2010&#39; 
+GROUP BY teamID 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">SUM(salary)</th>
+<th align="left">teamID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">60718166</td>
+<td align="left">ARI</td>
+</tr>
+<tr class="even">
+<td align="right">84423666</td>
+<td align="left">ATL</td>
+</tr>
+<tr class="odd">
+<td align="right">81612500</td>
+<td align="left">BAL</td>
+</tr>
+<tr class="even">
+<td align="right">162447333</td>
+<td align="left">BOS</td>
+</tr>
+<tr class="odd">
+<td align="right">105530000</td>
+<td align="left">CHA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first 5 rows of the total payroll for each of the different teams in 2010 is shown above.</p>
+<p>To find and plot the team payrolls for all years in the data base for which we have salary information, we use the query below along with the <strong>dbGetQuery()</strong> function in R to select the salary, teamID, and yearID variables from Salaries. We then use dplyr to calculate the total payroll per team for all years we have data for.</p>
+<p>The R for this is</p>
+<pre class="r"><code>salary.info &lt;- dbGetQuery(db, &#39;SELECT salary, teamID, yearID FROM Salaries&#39;)
+salary.info &lt;- as.tbl(salary.info)
+team.payrolls &lt;- salary.info %&gt;% 
+  group_by(teamID, yearID) %&gt;%
+  summarise(salary = sum(salary))</code></pre>
+<p>The plot for this tbl is displayed below– the R code used to create this plot is not shown here.</p>
+<p><img src="baseball_exploration_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>As we can see, the total payroll of baseball teams exhibits a strong upward trend over time. This is most likely due to the monetization of baseball over time, along with economic growth. We can also notice that the salaries of the New York Yankees increase exponentially over time, as well as the Los Angeles Dodgers, although the payroll growth of the second team happens a bit later. This is no doubt due to the fact that the two teams are located in Los Angeles and New York, and thus have some of the largest (and wealthiest) fanbases.</p>
+<p><strong><em>Which player has hit the most home runs?.</em></strong></p>
+<p>I am interpreting ‘the most home runs’ as the most home runs in a season. The Batting table holds the home run information in the variable HR, which provides the number of home runs a player hits. The Batting table also has the playerID variable, so we use the function MAX() along with selecting these two variables in order to figure out the answer to this question.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT MAX(HR), playerID 
+FROM Batting
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">MAX(HR)</th>
+<th align="left">playerID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">73</td>
+<td align="left">bondsba01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We can see that the most home runs hit is 73, and the output above shows the playerID of the player who hit these homers. Although we already know this playerID belongs to Barry Bonds from code executed in previous questions, we can demonstrate how to programmatically find the name of the player associated with the home runs by looking up the values of the variables nameFirst and nameLast in the Master table.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT nameFirst, nameLast 
+FROM Master 
+WHERE playerID = &#39;bondsba01&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">nameFirst</th>
+<th align="left">nameLast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Barry</td>
+<td align="left">Bonds</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>And we see from the output table that the player is indeed Barry Bonds.</p>
+<p>In order to determine the number of home runs he hit per year, we use the AVG() function and apply it to the HR values associated with Barry Bonds. We do not have to specify the year variable here since all of the HR variables for Barry Bonds in the Batting Table will be for the different years he played.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT AVG(HR) 
+FROM Batting 
+WHERE playerID = &#39;bondsba01&#39;
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">AVG(HR)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">34.6363636363636</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We can see from the output table above that Barry Bonds hit an average of approximately 37 home runs per year.</p>
+<p>In order to put this in context, we can calculate the average home runs for the other players in the data base. To do this, we use the function AVG() once more, and select these results as well as the playerID from the Batting table.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT AVG(HR), playerID
+FROM Batting
+GROUP BY playerID
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th align="right">AVG(HR)</th>
+<th align="left">playerID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.000000</td>
+<td align="left">aardsda01</td>
+</tr>
+<tr class="even">
+<td align="right">32.826087</td>
+<td align="left">aaronha01</td>
+</tr>
+<tr class="odd">
+<td align="right">1.857143</td>
+<td align="left">aaronto01</td>
+</tr>
+<tr class="even">
+<td align="right">0.000000</td>
+<td align="left">aasedo01</td>
+</tr>
+<tr class="odd">
+<td align="right">0.000000</td>
+<td align="left">abadan01</td>
+</tr>
+<tr class="even">
+<td align="right">0.000000</td>
+<td align="left">abadfe01</td>
+</tr>
+<tr class="odd">
+<td align="right">0.000000</td>
+<td align="left">abadijo01</td>
+</tr>
+<tr class="even">
+<td align="right">1.100000</td>
+<td align="left">abbated01</td>
+</tr>
+<tr class="odd">
+<td align="right">0.000000</td>
+<td align="left">abbeybe01</td>
+</tr>
+<tr class="even">
+<td align="right">3.800000</td>
+<td align="left">abbeych01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We can already see from the first 10 rows of the output table displayed above, with the exception of the second player, that Barry Bonds’s batting average is exceptional. This is a logical conclusion since he has hit the most home runs in a season out of any baseball player.</p>
+<p>To be sure of this answer, we can calculate the total average number of home runs per season for every single player. We can use the AVG() function once again, and apply it to the HR variable over all years in the Batting table.</p>
+<pre class="sql"><code>
+SELECT AVG(HR)
+FROM Batting
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">AVG(HR)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">3.00163977436705</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The output table above shows that the average number of home runs hit per season is 3. Barry Bonds’s average number of approximately 37 is way above this value. This average is definitely affected by the large number of players who hit no home runs in a season. While this may be due to the talent and work ethic of the player, it can also simply be a result of the position that that player plays. As a result, we can go one step further, and compare Barry Bonds only to those who hit at least one home run.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT AVG(HR)
+FROM Batting
+WHERE HR &gt; 0
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">AVG(HR)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">7.16464878405177</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>As we can see, this average is approximately four home runs greater, however, Barry Bonds’s batting average is still looking quite phenomenal when compared to the average number of home runs hit per season by players who hit at least one home run.</p>
+<p><strong><em>Has the distribution of home runs for players increased over the years?</em></strong></p>
+<p>I am interpreting the distrubtion of home runs for players as the number of players who get home runs per years. However, to determine the significance of the number of players who get home runs per year, we’ll also calculate the average number of home runs per player per year. To find this, we look again to the Batting table and extract the number of players who hit home runs, the average home runs in that year, and the year itself.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT COUNT(playerID), AVG(HR), yearID 
+FROM Batting
+WHERE HR &gt; 0 
+GROUP BY yearID 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">COUNT(playerID)</th>
+<th align="right">AVG(HR)</th>
+<th align="right">yearID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">25</td>
+<td align="right">1.880000</td>
+<td align="right">1871</td>
+</tr>
+<tr class="even">
+<td align="right">22</td>
+<td align="right">1.590909</td>
+<td align="right">1872</td>
+</tr>
+<tr class="odd">
+<td align="right">31</td>
+<td align="right">1.483871</td>
+<td align="right">1873</td>
+</tr>
+<tr class="even">
+<td align="right">24</td>
+<td align="right">1.666667</td>
+<td align="right">1874</td>
+</tr>
+<tr class="odd">
+<td align="right">21</td>
+<td align="right">1.904762</td>
+<td align="right">1875</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first five rows of the output table are displayed above. In order to determine the significance of these results, we’ll plot them in R (the code is not displayed here). We’ll use the <strong>dbGetQuery()</strong> function, along with the query above, to move the data to R.</p>
+<p>The plot of the number of players who hit home runs per year is below.</p>
+<p><img src="baseball_exploration_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p>We can see that the number of players who hit home runs per year increases over time. This is most likely because of two reasons. First of all, the number of teams and number of players participating in Professional Baseball increases along with economic growth, population growth, and increase in popularity of baseball. Second of all, as the number of baseball players increases, and the popularity of baseball increases, so does the criteria for what makes a good baseball player. We can hypothesize that baseball preparation (like training programs) only got more rigorous and intense as the popularity of baseball increased. Therefore, players participating in Professional Baseball today are probably better players than players participating in Professional Baseball in its early stages.</p>
+<p>The plot for average number of home runs per player is provided below.</p>
+<p><img src="baseball_exploration_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p>We can see that this plot looks somewhat similar to the plot of the Number of Players who hit home runs per year, with some notable differences. While this plot follows a similar pattern of growth, we can see that the average number of home runs per player increases much more drastically and much earlier than the number of players who hit home runs. This is most likely due to the phenomena of increased training and preparation rigor that followed the popularization of baseball, as I described previously.</p>
+<p><strong><em>How many games do pitchers start in a season? What would this look like plotted against games finished in a season?</em></strong></p>
+<p>In the Pitching table, the variable GS describes the number of games pitchers start in a season. We can use the AVG() function here if we interpret the “games pitchers start in a season” in general terms.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT AVG(GS), yearID 
+FROM Pitching 
+GROUP BY yearID 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">AVG(GS)</th>
+<th align="right">yearID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">13.36842</td>
+<td align="right">1871</td>
+</tr>
+<tr class="even">
+<td align="right">15.91304</td>
+<td align="right">1872</td>
+</tr>
+<tr class="odd">
+<td align="right">15.92000</td>
+<td align="right">1873</td>
+</tr>
+<tr class="even">
+<td align="right">27.29412</td>
+<td align="right">1874</td>
+</tr>
+<tr class="odd">
+<td align="right">14.68085</td>
+<td align="right">1875</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first five rows of this output table is shown above for the average number of games pitchers start per year. Due to the changing nature of baseball over time, it would not be statistically signifcant to calculate the average number of games started without seperating the results by year.</p>
+<p>In the Pitching table, the variable GF describes the number of games finished. We can use almost the exact same method as we used above to calculate the average number of games finished by pitchers over the years. The only notable difference is that when I first executed this code, it revealed that the first five years of baseball do not have data for games finished by pitchers, so for this code we will specify that yearID must be greater than 1875.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT AVG(GF), yearID 
+FROM Pitching
+WHERE yearID &gt; &#39;1875&#39;
+GROUP BY yearID 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">AVG(GF)</th>
+<th align="right">yearID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1.4117647</td>
+<td align="right">1876</td>
+</tr>
+<tr class="even">
+<td align="right">1.7894737</td>
+<td align="right">1877</td>
+</tr>
+<tr class="odd">
+<td align="right">0.7272727</td>
+<td align="right">1878</td>
+</tr>
+<tr class="even">
+<td align="right">1.2692308</td>
+<td align="right">1879</td>
+</tr>
+<tr class="odd">
+<td align="right">2.1818182</td>
+<td align="right">1880</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In order to plot the games started against the games finished, we’ll take the data over to R using the queries above, along with the <strong>dbGetQuery()</strong> function. We then use ggplot to plot the data– the code is not included in this report.</p>
+<p><img src="baseball_exploration_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p>We can observe a downward trend from the plot above, most clearly demonstrated by the trend line, which was calculated using regression methods. This means that the greater number of games a pitcher starts in a season, the smaller number of games he will finish, and vice versa. This leads me to believe that teams play pitchers based on their strengths– some pitchers are much better players at the end of the game, when their team is under pressure and the score is close; and some pitchers are much better players at the beginning of the game, for opposite reasons.</p>
+<p><strong><em>How many games do pitchers win in a season?</em></strong></p>
+<p>The variable W in the Pitching table describes the number of games that pitchers win in a season. Again, as in the previous question, I’m interpreting “games pitchers win in a season” as the average number of games a pitcher can be expected to win in a season.</p>
+<p>The SQL that finds the total average won games in a season is</p>
+<pre class="sql"><code>
+SELECT AVG(W) 
+FROM Pitching 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">AVG(W)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">4.808186365451</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The output table above states that on average, over all years, pitchers win 4.8 games in a season.</p>
+<p>The SQL that finds the average won games in a season over the years is</p>
+<pre class="sql"><code>
+SELECT AVG(W), yearID 
+FROM Pitching 
+GROUP BY yearID 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>Displaying records 1 - 5</caption>
+<thead>
+<tr class="header">
+<th align="right">AVG(W)</th>
+<th align="right">yearID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">6.31579</td>
+<td align="right">1871</td>
+</tr>
+<tr class="even">
+<td align="right">7.73913</td>
+<td align="right">1872</td>
+</tr>
+<tr class="odd">
+<td align="right">7.88000</td>
+<td align="right">1873</td>
+</tr>
+<tr class="even">
+<td align="right">13.58824</td>
+<td align="right">1874</td>
+</tr>
+<tr class="odd">
+<td align="right">7.12766</td>
+<td align="right">1875</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first five rows of the output table are provided above. This doesn’t yet tell us any significant information. However, we can take the data over to R and plot the average won games over the years to determine if there is any kind of siginicant trend. The R code for this is not displayed here.</p>
+<pre><code>## Warning: Use of `pitchers.win$yearID` is discouraged. Use
+## `yearID` instead.</code></pre>
+<pre><code>## Warning: Use of `pitchers.win$`AVG(W)`` is discouraged. Use
+## `AVG(W)` instead.</code></pre>
+<p><img src="baseball_exploration_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p>We can see that over time, the average number of games won by pitchers decreases. This may be due to the fact that as baseball became more popular, the game techniques became more detailed and complicated, leading to the data being unclear because different pitchers were used to start the game versus end the game.</p>
+<p><strong><em>What are the top ten collegiate producers of major league baseball players? How many colleges are represented in the database?</em></strong></p>
+<p>The information about colleges that baseball players attend can be found in the SchoolsPlayers table. To find the top ten collegiate producers of major league baseball, we can count the playerIDs along with selecting the schoolID from the SchoolsPlayers table, and then ordering the data from largest to smallest.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT COUNT(playerID), schoolID 
+FROM SchoolsPlayers 
+GROUP BY schoolID 
+ORDER BY COUNT(playerID) DESC 
+LIMIT 10 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>10 records</caption>
+<thead>
+<tr class="header">
+<th align="right">COUNT(playerID)</th>
+<th align="left">schoolID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">102</td>
+<td align="left">usc</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="left">texas</td>
+</tr>
+<tr class="odd">
+<td align="right">98</td>
+<td align="left">arizonast</td>
+</tr>
+<tr class="even">
+<td align="right">82</td>
+<td align="left">stanford</td>
+</tr>
+<tr class="odd">
+<td align="right">77</td>
+<td align="left">michigan</td>
+</tr>
+<tr class="even">
+<td align="right">75</td>
+<td align="left">holycross</td>
+</tr>
+<tr class="odd">
+<td align="right">70</td>
+<td align="left">notredame</td>
+</tr>
+<tr class="even">
+<td align="right">68</td>
+<td align="left">illinois</td>
+</tr>
+<tr class="odd">
+<td align="right">66</td>
+<td align="left">ucla</td>
+</tr>
+<tr class="even">
+<td align="right">66</td>
+<td align="left">arizona</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The output table of the top ten collegiate producers of major league baseball players is provided above. We can see that the top producer of major league baseball players is the University of Southern California.</p>
+<p>To find the number of schools in the database, we can go to the Schools table and count the number of schoolIDs.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT COUNT(DISTINCT schoolID) 
+FROM Schools 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">COUNT(DISTINCT schoolID)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">749</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>As a sanity check, we’ll also check the number of schools in the SchoolsPlayers table.</p>
+<p>The SQL for this is</p>
+<pre class="sql"><code>
+SELECT COUNT(DISTINCT schoolID) 
+FROM SchoolsPlayers 
+</code></pre>
+<div class="knitsql-table">
+<table>
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th align="left">COUNT(DISTINCT schoolID)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">713</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>As we can see, the two queries return variable results. To verify the exact number of schools in the database, we’ll take the queries with the COUNT() function removed over to R using <strong>dbGetQuery()</strong> and verify it that way.</p>
+<p>The R for this is</p>
+<pre class="r"><code>schools1 &lt;- dbGetQuery(db, &quot;SELECT DISTINCT schoolID FROM Schools&quot;)
+schools2 &lt;- dbGetQuery(db, &quot;SELECT DISTINCT schoolID FROM SchoolsPlayers&quot;)
+schools &lt;- rbind(schools1, schools2)
+unique.schools &lt;- unique(schools$schoolID)
+numSchools &lt;- length(unique.schools)</code></pre>
+<p>And R returns 749 schools. Therefore we can verify that the first SQL query returned the correct number of unique schools in the database. However, it’s important to note that there are only 713 schools in the SchoolsPlayers table, which means that 36 of the schools in the Schools table are irrelevant to the data we’re working with since they haven’t produced any major league baseball players.</p>
+<div id="code-appendix" class="section level4">
+<h4>CODE APPENDIX</h4>
+<pre class="r"><code># opening packages
+library(&quot;RSQLite&quot;)
+library(&quot;dplyr&quot;)
+library(&quot;ggplot2&quot;) 
+
+# connection to open file
+db &lt;- dbConnect(RSQLite::SQLite(), &quot;lahman2013.sqlite&quot;)
+
+
+SELECT COUNT(DISTINCT playerID) 
+FROM Master 
+
+
+# r for unique people in the database
+all &lt;- dbGetQuery(db, &quot;SELECT DISTINCT playerID FROM Master&quot;)
+all.unique &lt;- unique(all)
+count &lt;- length(all.unique$playerID)
+
+
+SELECT COUNT(DISTINCT playerID) 
+FROM Managers 
+WHERE plyrMgr = &#39;Y&#39;
+
+
+# r for how many players became managers
+managers2players &lt;- dbGetQuery(db, &quot;SELECT DISTINCT playerID FROM Managers 
+                               WHERE plyrMgr = &#39;Y&#39;&quot;)
+numManagerPlayers &lt;- length(managers2players$playerID) 
+
+
+CREATE TABLE NumPlayers AS
+SELECT playerID, yearID, teamID 
+FROM Batting 
+WHERE yearID 
+BETWEEN &#39;2000&#39; AND &#39;2013&#39;
+
+
+SELECT COUNT(playerID), yearID 
+FROM NumPlayers 
+GROUP BY yearID
+
+
+# num summaries for question 4
+players.perYr &lt;- dbGetQuery(db, &quot;SELECT COUNT(playerID), yearID FROM NumPlayers GROUP BY yearID&quot;)
+avg.playerPerYr &lt;- mean(players.perYr$`COUNT(playerID)`)
+
+
+# plot for question 4
+ggplot(players.perYr, aes(players.perYr$yearID, players.perYr$`COUNT(playerID)`)) +
+  geom_point(color = &quot;deepskyblue4&quot;) + xlab(&quot;Year&quot;) + ylab(&quot;Number of Players &quot;) +
+  ggtitle(&quot;Total Number of Baseball Players From 2000 - 2013&quot;) +
+  theme_minimal() + geom_smooth(method = &quot;lm&quot;, se = FALSE, color = &quot;olivedrab3&quot;) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+SELECT COUNT(playerID), teamID FROM NumPlayers WHERE yearID = &#39;2000&#39; GROUP BY teamID
+
+
+SELECT COUNT(playerID), teamID FROM NumPlayers GROUP BY teamID
+
+
+SELECT teamID, lgID, divID 
+FROM Teams 
+WHERE yearID = &#39;2010&#39; 
+AND WSWin = &#39;Y&#39;
+
+
+SELECT teamID, yearID, lgID, divID 
+FROM Teams 
+WHERE DivWin = &#39;Y&#39; 
+AND LgWin = &#39;Y&#39; 
+AND WSWin = &#39;N&#39;
+
+
+SELECT teamID, yearID, lgID, divID 
+FROM Teams 
+WHERE WSWin = &#39;N&#39; 
+AND LgWin = &#39;Y&#39;
+AND yearID
+BETWEEN &#39;1903&#39; AND &#39;1968&#39;
+
+
+# r code for teams that have made it to the world series and lost
+b4.div &lt;- dbGetQuery(db, &quot;SELECT teamID, yearID, lgID, divID FROM Teams 
+                     WHERE WSWin = &#39;N&#39; AND LgWin = &#39;Y&#39; AND yearID 
+                     BETWEEN &#39;1903&#39; AND &#39;1968&#39;&quot;)
+after.div &lt;- dbGetQuery(db, &quot;SELECT teamID, yearID, lgID, divID FROM Teams
+                        WHERE DivWin = &#39;Y&#39; AND LgWin = &#39;Y&#39; AND WSWin = &#39;N&#39;&quot;)
+all.losers &lt;- rbind(b4.div, after.div)
+table(all.losers$teamID)
+
+
+SELECT teamID, lgID, divID, yearID 
+FROM Teams 
+WHERE WSWin = &#39;Y&#39;
+AND yearID
+BETWEEN &#39;1903&#39; and &#39;2013&#39;
+
+
+winners &lt;- dbGetQuery(db, &quot;SELECT teamID, lgID, divID, yearID FROM Teams
+                      WHERE WSWin = &#39;Y&#39; AND yearID BETWEEN &#39;1903&#39; and &#39;2013&#39;&quot;)
+table(winners$teamID)
+
+
+-- getting three largest salaries
+SELECT DISTINCT salary 
+FROM Salaries 
+WHERE yearID = &#39;2003&#39; 
+ORDER BY salary 
+DESC LIMIT 3
+
+
+SELECT DISTINCT playerID, teamID 
+FROM Salaries 
+WHERE salary = &#39;22000000&#39; OR salary = &#39;20000000&#39; OR salary = &#39;18700000&#39; 
+AND yearID = &#39;2003&#39;
+
+
+SELECT nameFirst, nameLast, bats, throws, playerID 
+FROM Master 
+WHERE playerID = &#39;rodrial01&#39; OR playerID = &#39;ramirma02&#39; OR playerID = &#39;delgaca01&#39; 
+OR playerID = &#39;bondsba01&#39; OR  playerID = &#39;cabremi01&#39; OR playerID = &#39;hallaro01&#39; 
+OR playerID = &#39;howarry01&#39; OR playerID = &#39;zitoba01&#39; 
+
+
+# taking it over to R
+big.bucks &lt;- dbGetQuery(db, &#39;SELECT DISTINCT playerID, teamID FROM Salaries WHERE 
+                        salary = 22000000 OR salary = 20000000 OR 
+                        salary = 18700000 AND yearID = 2003&#39;)
+player.details &lt;- dbGetQuery(db, &#39;SELECT nameFirst, nameLast, bats, throws, playerID 
+                        FROM Master WHERE playerID = &quot;rodrial01&quot; OR 
+                        playerID = &quot;ramirma02&quot; OR playerID = &quot;delgaca01&quot; 
+                        OR playerID = &quot;bondsba01&quot; OR  playerID = &quot;cabremi01&quot; 
+                        OR playerID = &quot;hallaro01&quot; OR playerID = &quot;howarry01&quot; 
+                        OR playerID = &quot;zitoba01&quot;&#39;)
+q10.table &lt;- merge(big.bucks, player.details, by = &#39;playerID&#39;)
+q10.table
+
+
+SELECT SUM(salary), teamID 
+FROM Salaries 
+WHERE yearID = &#39;2010&#39; 
+GROUP BY teamID 
+
+
+salary.info &lt;- dbGetQuery(db, &#39;SELECT salary, teamID, yearID FROM Salaries&#39;)
+salary.info &lt;- as.tbl(salary.info)
+team.payrolls &lt;- salary.info %&gt;% 
+  group_by(teamID, yearID) %&gt;%
+  summarise(salary = sum(salary))
+
+
+# plot for payroll
+ggplot(team.payrolls, aes(yearID, salary)) +
+  geom_point(aes(color = factor(teamID))) +
+  xlab(&quot;Year&quot;) + ylab(&quot;Total Team Payroll&quot;) +
+  ggtitle(&quot;Total Payroll of Baseball Teams from 1985 to 2013&quot;) +
+  theme_minimal() + theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+SELECT MAX(HR), playerID 
+FROM Batting
+
+
+SELECT nameFirst, nameLast 
+FROM Master 
+WHERE playerID = &#39;bondsba01&#39;
+
+
+SELECT AVG(HR) 
+FROM Batting 
+WHERE playerID = &#39;bondsba01&#39;
+
+
+SELECT AVG(HR), playerID
+FROM Batting
+GROUP BY playerID
+
+
+SELECT AVG(HR)
+FROM Batting
+
+
+SELECT AVG(HR)
+FROM Batting
+WHERE HR &gt; 0
+
+
+SELECT COUNT(playerID), AVG(HR), yearID 
+FROM Batting
+WHERE HR &gt; 0 
+GROUP BY yearID 
+
+
+home.runs &lt;- dbGetQuery(db, &#39;SELECT COUNT(playerID), AVG(HR), 
+                        yearID FROM Batting WHERE HR &gt; 0 GROUP BY yearID&#39;)
+names(home.runs) &lt;- c(&quot;numPlayers&quot;, &quot;avgHRperplayer&quot;, &quot;Year&quot;)
+
+# plot for above querying - num players
+ggplot(home.runs) + 
+  geom_point(aes(Year, numPlayers), color = &quot;palegreen4&quot;) +
+  ylab(&quot;Number of Players&quot;) +
+  ggtitle(&quot;Number of Players Who Hit Home Runs per Year From 1931 to 2013&quot;) +
+  xlim(1871, 2015) + theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+# plot for above querying - average homers
+ggplot(home.runs) +
+  geom_point(aes(Year, avgHRperplayer), color = &quot;slateblue&quot;) +
+  ylab(&quot;Average Number of Home Runs per Player&quot;) +
+  ggtitle(&quot;Average Number of Home Runs per Player From 1931 to 2013&quot;) +
+  xlim(1871, 2015) + theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+SELECT AVG(GS), yearID 
+FROM Pitching 
+GROUP BY yearID 
+
+
+SELECT AVG(GF), yearID 
+FROM Pitching
+WHERE yearID &gt; &#39;1875&#39;
+GROUP BY yearID 
+
+
+pitchers1 &lt;- dbGetQuery(db, &#39;SELECT AVG(GS), yearID FROM Pitching GROUP BY yearID&#39;)
+names(pitchers1) &lt;- c(&quot;avgGamesStarted&quot;, &quot;year&quot;)
+pitchers2 &lt;- dbGetQuery(db, &#39;SELECT AVG(GF), yearID FROM Pitching GROUP BY yearID&#39;)
+names(pitchers2) &lt;- c(&quot;avgGamesFinished&quot;, &quot;year&quot;)
+pitchers &lt;- merge(pitchers1, pitchers2, by = &quot;year&quot;)
+
+# plot for games finished vs. games started 
+ggplot(pitchers, aes(avgGamesFinished, avgGamesStarted)) +
+  geom_point(color = &quot;olivedrab4&quot;) + ylab(&quot;Avg. Games Started in a Season&quot;) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE, color = &quot;turquoise3&quot;) +
+  xlab(&quot;Avg. Games Finished in a Season&quot;) +
+  ggtitle(&quot;Games Started vs. Games Finished&quot;) + theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+SELECT AVG(W) 
+FROM Pitching 
+
+
+SELECT AVG(W), yearID 
+FROM Pitching 
+GROUP BY yearID 
+
+
+pitchers.win &lt;- dbGetQuery(db, &quot;SELECT AVG(W), yearID FROM Pitching GROUP BY yearID&quot;)
+
+# plot of how many games pitchers won in a season
+ggplot(pitchers.win, aes(pitchers.win$yearID, pitchers.win$`AVG(W)`)) + 
+  geom_point(color = &quot;coral4&quot;) + xlab(&quot;Year&quot;) + ylab(&quot;Games Won&quot;) +
+  ggtitle(&quot;Average Games Pitchers Won 1871 - 2013&quot;) +
+  xlim(1871, 2015) + theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+SELECT COUNT(playerID), schoolID 
+FROM SchoolsPlayers 
+GROUP BY schoolID 
+ORDER BY COUNT(playerID) DESC 
+LIMIT 10 
+
+
+SELECT COUNT(DISTINCT schoolID) 
+FROM Schools 
+
+
+SELECT COUNT(DISTINCT schoolID) 
+FROM SchoolsPlayers 
+
+
+schools1 &lt;- dbGetQuery(db, &quot;SELECT DISTINCT schoolID FROM Schools&quot;)
+schools2 &lt;- dbGetQuery(db, &quot;SELECT DISTINCT schoolID FROM SchoolsPlayers&quot;)
+schools &lt;- rbind(schools1, schools2)
+unique.schools &lt;- unique(schools$schoolID)
+numSchools &lt;- length(unique.schools)</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
