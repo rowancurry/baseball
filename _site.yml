@@ -1,0 +1,14 @@
+---
+name: "Baseball"
+output_dir: "docs"
+navbar:
+  title: "Baseball"
+  left:
+  - text: "Home"
+    href: index.html
+  - text: "Data Exploration"
+    href: baseball_exploration.html
+output:
+  html_document:
+theme: cosmo
+
